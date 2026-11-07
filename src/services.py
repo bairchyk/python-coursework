@@ -1,60 +1,52 @@
+"""Сервисы для поиска и анализа банковских транзакций."""
+
 import json
-import re
+import logging
+import math
 from collections import Counter
+from typing import Any
 
-transactions = [
-    {"Описание": "Покупка в Пятёрочке"},
-    {"Описание": "Перевод Ивану"},
-    {"Описание": "ПЯТЁРОЧКА"},
-]
+logger = logging.getLogger(__name__)
 
-transactions_1 = [
-    {
-        "Описание": "Покупка в Пятёрочке",
-        "Категория": "Супермаркеты",
-    },
-    {
-        "Описание": "Поездка на такси",
-        "Категория": "Транспорт",
-    },
-]
 
-categories = ["Супермаркеты", "такси", "Пятерочке"]
+def _json_safe(value: Any) -> Any:
+    """Заменить Nan на нули в JSON"""
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(item) for item in value]
+    return value
 
 
 def search_transactions(
     transactions: list[dict],
     search_string: str,
 ) -> str:
-    result = []
+    """Возвращает JSON транзакций по описанию или категории"""
+    query = search_string.casefold()
 
-    for transaction in transactions:
-        description = transaction.get("Описание", "")
-        category = transaction.get("Категория", "")
+    def matches(transaction: dict) -> bool:
+        description = transaction.get("Описание")
+        category = transaction.get("Категория")
 
-        match_description = re.search(
-            re.escape(search_string),
-            description,
-            flags=re.IGNORECASE,
-        )
+        return any(query in value.casefold() for value in (description, category) if isinstance(value, str))
 
-        match_category = re.search(
-            re.escape(search_string),
-            category,
-            flags=re.IGNORECASE,
-        )
+    filtered_transactions = list(filter(matches, transactions))
 
-        if match_description or match_category:
-            result.append(transaction)
-
-    return json.dumps(result, ensure_ascii=False)
+    return json.dumps(
+        _json_safe(filtered_transactions),
+        ensure_ascii=False,
+        allow_nan=False,
+    )
 
 
 def count_transactions_by_category(
     transactions: list[dict],
     categories: list[str],
 ) -> dict[str, int]:
-
+    """Подсчитывает число транзакций из указанных категорий"""
     descriptions = [transaction.get("Категория", "") for transaction in transactions]
     counts = Counter(descriptions)
     result = {}

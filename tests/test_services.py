@@ -114,3 +114,32 @@ def test_count_transactions_by_category() -> None:
         "Кино": 0,
         "Рестораны": 0,
     }
+
+
+def test_search_transactions_with_nan() -> None:
+    transactions = [
+        {
+            "Описание": "Покупка в Пятёрочке",
+            "Категория": float("nan"),
+            "Сумма платежа": -450.50,
+        },
+        {
+            "Описание": float("nan"),
+            "Категория": "Такси",
+            "Сумма платежа": float("nan"),
+        },
+    ]
+
+    response = search_transactions(transactions, "такси")
+    result = json.loads(response)
+
+    assert result == [
+        {
+            "Описание": None,
+            "Категория": "Такси",
+            "Сумма платежа": None,
+        }
+    ]
+
+    assert "NaN" not in response
+    assert "null" in response
