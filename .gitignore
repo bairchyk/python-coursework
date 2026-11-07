@@ -220,3 +220,8 @@ __marimo__/
 .streamlit/secrets.toml
 
 data/
+
+# Generated Excel reports
+spending_by_category.xlsx
+report.xlsx
+custom_report.xlsx
