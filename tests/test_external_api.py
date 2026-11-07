@@ -85,3 +85,33 @@ def test_get_stock_prices_zero_price() -> None:
         result = get_stock_prices(["AAPL"])
 
         assert result == []
+
+
+def test_get_currency_rates_nan() -> None:
+    with (
+        patch("src.external_api.API_KEY", "test_key"),
+        patch("src.external_api.requests.get") as mock_get,
+    ):
+        mock_get.return_value.json.return_value = {
+            "success": True,
+            "info": {"rate": float("nan")},
+        }
+
+        result = get_currency_rates(["USD"])
+
+        assert result == []
+
+
+def test_get_stock_prices_nan() -> None:
+    with (
+        patch("src.external_api.TWELVE_DATA_API_KEY", "test_key"),
+        patch("src.external_api.requests.get") as mock_get,
+    ):
+        mock_get.return_value.ok = True
+        mock_get.return_value.json.return_value = {
+            "price": float("nan"),
+        }
+
+        result = get_stock_prices(["AAPL"])
+
+        assert result == []

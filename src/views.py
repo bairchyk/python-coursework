@@ -60,7 +60,7 @@ def get_cards_info(transactions: list[dict]) -> list[dict]:
 
 def get_top_transactions(transactions: list[dict]) -> list[dict]:
     """Функция сортирует по сумме"""
-    sorted_transactions = sorted(transactions, key=lambda transaction: abs(transaction["Сумма платежа"]), reverse=True)
+    sorted_transactions = sorted(transactions, key=lambda transaction: transaction["Сумма платежа"], reverse=True)
     top_five = sorted_transactions[:5]
     result = []
     for transaction in top_five:

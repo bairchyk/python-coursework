@@ -1,4 +1,5 @@
 import logging
+import math
 import os
 
 import requests
@@ -57,7 +58,7 @@ def get_currency_rates(currencies: list[str]) -> list[dict]:
 
             rate = float(data["info"]["rate"])
 
-            if rate <= 0:
+            if not math.isfinite(rate) or rate <= 0:
                 continue
 
             result.append(
@@ -67,7 +68,7 @@ def get_currency_rates(currencies: list[str]) -> list[dict]:
                 }
             )
 
-        except requests.RequestException as error:
+        except (requests.RequestException, KeyError, TypeError, ValueError) as error:
             logger.error(
                 "Error while getting currency rates %s : %s",
                 currency,
@@ -123,7 +124,7 @@ def get_stock_prices(stocks: list[str]) -> list[dict]:
 
             price = float(data["price"])
 
-            if price <= 0:
+            if not math.isfinite(price) or price <= 0:
                 continue
 
             result.append(
@@ -135,7 +136,7 @@ def get_stock_prices(stocks: list[str]) -> list[dict]:
 
         except (requests.RequestException, KeyError, TypeError, ValueError) as error:
             logger.error(
-                "Error while getting currency rates %s : %s",
+                "Error while getting stock rates %s : %s",
                 stock,
                 type(error).__name__,
             )
