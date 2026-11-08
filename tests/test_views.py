@@ -226,7 +226,7 @@ def test_get_top_transactions_with_negative_amounts() -> None:
     result = get_top_transactions(transactions)
 
     assert [item["amount"] for item in result] == [
-        -9000.0,
         1000.0,
         200.0,
+        -9000.0,
     ]
