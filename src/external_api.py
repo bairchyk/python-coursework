@@ -80,6 +80,7 @@ def get_currency_rates(currencies: list[str]) -> list[dict]:
 
 
 def get_stock_prices(stocks: list[str]) -> list[dict]:
+    """Возвращает стоимости акций"""
     result = []
 
     if not TWELVE_DATA_API_KEY:
@@ -142,9 +143,3 @@ def get_stock_prices(stocks: list[str]) -> list[dict]:
             )
 
     return result
-
-
-if __name__ == "__main__":
-
-    result = get_stock_prices(["AAPL", "MSFT", "GOOGL", "AMZN", "TSLA", "MSFT"])
-    print(" " + ",\n ".join(repr(item) for item in result) + ",")

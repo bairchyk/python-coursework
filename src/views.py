@@ -81,6 +81,7 @@ def get_top_transactions(transactions: list[dict]) -> list[dict]:
 
 
 def main_page(date: str) -> str:
+    """Формирует JSON-ответ для главной страницы приложения."""
     transactions = read_xlsx_file(str(BASE_DIR / "data" / "operations.xls"))
 
     filtered_transactions = filter_transactions_by_date(transactions, date)
